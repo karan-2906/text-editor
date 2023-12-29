@@ -8,6 +8,7 @@ const TextEditor = () => {
     const [currentText, setCurrentText] = useState('');
     const [fontSize, setFontSize] = useState(16);
     const [fontFamily, setFontFamily] = useState('Arial');
+    const [color, setColor] = useState('#000000');
     const [draggedItem, setDraggedItem] = useState(null);
     const [history, setHistory] = useState([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
@@ -28,14 +29,30 @@ const TextEditor = () => {
         updateHistory(newTextList);
     };
 
-    const handleFontSizeChange = (value) => {
-        const newSize = parseInt(value, 10);
-        setFontSize(isNaN(newSize) ? '' : newSize);
-    };
+    const handleFontSizeChange = (size, index) => {
+        const newSize = parseInt(size, 10);
+        if (!isNaN(newSize)) {
+          const newTextList = [...textList];
+          newTextList[index] = { ...newTextList[index], fontSize: newSize };
+          setTextList(newTextList);
+    
+          // Update history
+          updateHistory(newTextList);
+        }
+      };
 
     const handleFontFamilyChange = (value) => {
         setFontFamily(value);
     };
+
+    const handleColorChange = (value, index) => {
+    const newTextList = [...textList];
+    newTextList[index] = { ...newTextList[index], color: value };
+    setTextList(newTextList);
+
+    // Update history
+    updateHistory(newTextList);
+  };
 
     const handleAddText = () => {
         const newTextList = [
@@ -44,6 +61,7 @@ const TextEditor = () => {
                 text: currentText,
                 fontSize,
                 fontFamily,
+                color,
                 position: { left: 0, top: 0 },
             },
         ];
@@ -126,6 +144,8 @@ const TextEditor = () => {
                         onDragStart={handleDragStart}
                         onDragMove={handleDragMove}
                         onDragEnd={handleDragEnd}
+                        onColorChange={handleColorChange}
+                        onSizeChange={handleFontSizeChange}
                     />
                 ))}
             </div>
@@ -137,10 +157,12 @@ const TextEditor = () => {
                     currentText={currentText}
                     fontSize={fontSize}
                     fontFamily={fontFamily}
+                    color={color}
                     onTextChange={setCurrentText}
                     onFontSizeChange={handleFontSizeChange}
                     onFontFamilyChange={handleFontFamilyChange}
                     onAddText={handleAddText}
+                    onColorChange={handleColorChange}
                 />
                 <div className='flex gap-4 mx-4'>
                     <button onClick={handleUndo} className=" w-1/2 p-2 bg-red-500 text-black" disabled={historyIndex === 0}>
